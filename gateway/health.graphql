@@ -1,0 +1,22 @@
+type HealthInformation {
+  weight: Float!
+  height: Float!
+}
+
+interface Node {
+  id: ID!
+}
+
+input HealthInformationInput {
+  weight: Float
+  height: Float
+}
+
+extend type User implements Node @key(fields: "id") {
+  id: ID! @external
+  healthInformation: HealthInformation
+}
+
+extend type Mutation {
+  updateHealthInformation(input: HealthInformationInput!): User!
+}

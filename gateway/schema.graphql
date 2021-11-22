@@ -1,0 +1,130 @@
+schema
+  @core(feature: "https://specs.apollo.dev/core/v0.1"),
+  @core(feature: "https://specs.apollo.dev/join/v0.1")
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @core(feature: String!) repeatable on SCHEMA
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet) on FIELD_DEFINITION
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on OBJECT | INTERFACE
+
+directive @join__owner(graph: join__Graph!) on OBJECT | INTERFACE
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+type Booking implements Node {
+  id: ID!
+  dateTime: String!
+  schedule: Schedule!
+  user: User!
+}
+
+type BookingConnection implements Connection {
+  pageInfo: PageInfo!
+  edges: [BookingEdge]
+  totalCount: Int
+}
+
+type BookingEdge implements Edge {
+  node: Booking!
+  cursor: String!
+}
+
+input BookScheduleInput {
+  scheduleId: ID!
+}
+
+interface Connection {
+  pageInfo: PageInfo!
+  edges: [Edge]
+  totalCount: Int
+}
+
+input CredentialInput {
+  username: String!
+  password: String!
+}
+
+interface Edge {
+  node: Node!
+  cursor: String!
+}
+
+type HealthInformation {
+  weight: Float!
+  height: Float!
+}
+
+input HealthInformationInput {
+  weight: Float
+  height: Float
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  FITNESS @join__graph(name: "fitness" url: "http://localhost:4003")
+  HEALTH @join__graph(name: "health" url: "http://localhost:4002")
+  IDP @join__graph(name: "idp" url: "http://localhost:4001")
+}
+
+type Mutation {
+  bookSchedule(input: BookScheduleInput!): Booking! @join__field(graph: FITNESS)
+  updateHealthInformation(input: HealthInformationInput!): User! @join__field(graph: HEALTH)
+  logout: String @join__field(graph: IDP)
+  accessToken(input: CredentialInput!): String! @join__field(graph: IDP)
+  register(input: CredentialInput!): RegisterResult! @join__field(graph: IDP)
+  updateProfile(input: UpdateProfileInput!): User! @join__field(graph: IDP)
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Profile {
+  name: String!
+}
+
+type Query {
+  schedules: [Schedule!]! @join__field(graph: FITNESS)
+  me: User! @join__field(graph: IDP)
+}
+
+type RegisterResult {
+  user: User!
+  accessToken: String!
+}
+
+type Schedule implements Node {
+  id: ID!
+  title: String!
+  dateTime: String!
+}
+
+input UpdateProfileInput {
+  name: String!
+}
+
+type User implements Node
+  @join__owner(graph: IDP)
+  @join__type(graph: IDP, key: "id")
+  @join__type(graph: FITNESS, key: "id")
+  @join__type(graph: HEALTH, key: "id")
+{
+  id: ID! @join__field(graph: IDP)
+  username: String! @join__field(graph: IDP)
+  profile: Profile! @join__field(graph: IDP)
+  bookingConnection(first: Int, after: String): BookingConnection! @join__field(graph: FITNESS)
+  healthInformation: HealthInformation @join__field(graph: HEALTH)
+}

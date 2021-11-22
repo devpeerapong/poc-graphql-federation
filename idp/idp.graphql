@@ -1,0 +1,38 @@
+interface Node {
+  id: ID!
+}
+
+type Profile {
+  name: String!
+}
+
+type RegisterResult {
+  user: User!
+  accessToken: String!
+}
+
+type User implements Node @key(fields: "id") {
+  id: ID!
+  username: String!
+  profile: Profile!
+}
+
+input CredentialInput {
+  username: String!
+  password: String!
+}
+
+input UpdateProfileInput {
+  name: String!
+}
+
+extend type Query {
+  me: User!
+}
+
+extend type Mutation {
+  logout: String
+  accessToken(input: CredentialInput!): String!
+  register(input: CredentialInput!): RegisterResult!
+  updateProfile(input: UpdateProfileInput!): User!
+}

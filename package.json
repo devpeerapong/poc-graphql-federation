@@ -1,0 +1,39 @@
+{
+  "name": "graphql-federation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "rover:subgraph": "ts-node scripts/instrospect.ts",
+    "rover:compose": "rover supergraph compose --config ./gateway/supergraph-config.yaml > ./gateway/schema.graphql",
+    "build:schema": "yarn rover:subgraph && yarn rover:compose",
+    "start:service": "concurrently -n idp,health,fitness \"ts-node --files idp/server.ts\" \"ts-node --files health/server.ts\" \"ts-node --files fitness/server.ts\"",
+    "start:gateway": "yarn build:schema && ts-node --files ./gateway/server.ts",
+    "codegen": "graphql-codegen --config codegen.yml"
+  },
+  "dependencies": {
+    "@apollo/gateway": "^0.44.0",
+    "@prisma/client": "2.21.2",
+    "apollo-server": "^3.5.0",
+    "apollo-tracing": "^0.15.0",
+    "bcrypt": "^5.0.1",
+    "concurrently": "^6.4.0",
+    "dotenv": "^10.0.0",
+    "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "nanoid": "^3.1.30",
+    "prisma": "2.21.2",
+    "yaml": "^1.10.2"
+  },
+  "devDependencies": {
+    "@apollo/federation": "^0.33.7",
+    "@graphql-codegen/cli": "2.3.0",
+    "@graphql-codegen/typescript": "2.4.1",
+    "@graphql-codegen/typescript-resolvers": "2.4.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/node": "^16.11.9",
+    "prettier": "^2.4.1",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}

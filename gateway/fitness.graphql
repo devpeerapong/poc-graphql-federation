@@ -1,0 +1,62 @@
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+interface Node {
+  id: ID!
+}
+
+interface Edge {
+  node: Node!
+  cursor: String!
+}
+
+interface Connection {
+  pageInfo: PageInfo!
+  edges: [Edge]
+  totalCount: Int
+}
+
+type Schedule implements Node {
+  id: ID!
+  title: String!
+  dateTime: String!
+}
+
+type Booking implements Node {
+  id: ID!
+  dateTime: String!
+  schedule: Schedule!
+  user: User!
+}
+
+input BookScheduleInput {
+  scheduleId: ID!
+}
+
+type BookingEdge implements Edge {
+  node: Booking!
+  cursor: String!
+}
+
+type BookingConnection implements Connection {
+  pageInfo: PageInfo!
+  edges: [BookingEdge]
+  totalCount: Int
+}
+
+extend type User implements Node @key(fields: "id") {
+  id: ID! @external
+  bookingConnection(first: Int, after: String): BookingConnection!
+}
+
+extend type Query {
+  schedules: [Schedule!]!
+}
+
+extend type Mutation {
+  bookSchedule(input: BookScheduleInput!): Booking!
+}

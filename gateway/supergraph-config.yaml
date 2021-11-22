@@ -1,0 +1,14 @@
+subgraphs:
+  idp:
+    routing_url: http://localhost:4001
+    schema:
+      file: idp.graphql
+  health:
+    routing_url: http://localhost:4002
+    schema:
+      file: health.graphql
+  fitness:
+    routing_url: http://localhost:4003
+    schema:
+      file: fitness.graphql
+

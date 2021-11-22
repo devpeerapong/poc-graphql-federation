@@ -1,0 +1,29 @@
+overwrite: true
+generates:
+  idp/generated.ts:
+    documents: null
+    schema: "idp/idp.graphql"
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      declarationKind: 'interface'
+      federation: true
+  health/generated.ts:
+    documents: null
+    schema: "health/health.graphql"
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      declarationKind: 'interface'
+      federation: true
+  fitness/generated.ts:
+    documents: null
+    schema: "fitness/fitness.graphql"
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      declarationKind: 'interface'
+      federation: true
